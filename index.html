@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uygulamalarım ve Oyunlarım</title>
+<meta name="description" content="Google Play ve App Store'daki uygulamalarım ve oyunlarım.">
+<meta property="og:title" content="Uygulamalarım ve Oyunlarım">
+<meta property="og:description" content="Google Play ve App Store'daki uygulamalarım ve oyunlarım.">
+<meta property="og:image" content="https://ahmetercikan.github.io/uygulamalar/icons/cizio.png">
+<style>
+  :root {
+    --bg: #f6f3ee; --card: #ffffff; --text: #2a2320; --muted: #7a6e68;
+    --line: #e9e2da; --android: #1f9d55; --apple: #111111; --off: #c9c0b8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161413; --card: #211e1c; --text: #f1ebe5; --muted: #a59a92;
+            --line: #2f2a27; --android: #3ddc84; --apple: #f1ebe5; --off: #4a433f; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 40px 16px 56px; }
+  header { text-align: center; margin-bottom: 32px; }
+  h1 { font-size: 1.75rem; margin: 0 0 6px; letter-spacing: -0.02em; }
+  header p { margin: 0; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+          padding: 22px 16px 18px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .card img { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+  .card h2 { font-size: 1.1rem; margin: 14px 0 4px; }
+  .card p { font-size: .88rem; color: var(--muted); margin: 0 0 16px; flex: 1; }
+  .stores { display: flex; gap: 12px; justify-content: center; }
+  .store { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center;
+           border: 1px solid var(--line); background: var(--bg); text-decoration: none;
+           transition: transform .12s, box-shadow .12s; }
+  .store svg { width: 28px; height: 28px; }
+  a.store:hover, a.store:focus-visible { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.12); outline: none; }
+  a.store.android { color: var(--android); }
+  a.store.ios { color: var(--apple); }
+  .store.off { color: var(--off); cursor: default; position: relative; }
+  .store.off::after { content: "Yakında"; position: absolute; bottom: -18px; font-size: .68rem; color: var(--muted); white-space: nowrap; }
+  .card:has(.off) .stores { margin-bottom: 14px; }
+  footer { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 36px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Uygulamalarım ve Oyunlarım</h1>
+    <p>Mağaza simgesine dokun, uygulamayı indir.</p>
+  </header>
+  <section class="grid" id="list"></section>
+  <footer>KingSmile Studios</footer>
+</main>
+
+<script>
+// Yeni uygulama eklemek veya App Store bağlantısı girmek için yalnızca bu listeyi düzenle.
+// ios: null ise iOS simgesi gri görünür ve "Yakında" yazar.
+const APPS = [
+  { name: "Çizio", desc: "Adım adım çizim öğren, 3B adada oyna.", icon: "icons/cizio.png",
+    android: "https://play.google.com/store/apps/details?id=com.ahmetercikan.cizio", ios: null },
+  { name: "Sayio", desc: "Çocuklar için kolay matematik.", icon: "icons/sayio.png",
+    android: "https://play.google.com/store/apps/details?id=com.ahmetercikan.sayio", ios: null },
+  { name: "İsim Şehir", desc: "Arkadaşlarınla online kelime oyunu.", icon: "icons/isimo.png",
+    android: "https://play.google.com/store/apps/details?id=com.ahmetercikan.isimsehir", ios: null },
+  { name: "Gas Story", desc: "1-4 kişilik komik online rafting oyunu.", icon: "icons/gasstory.png",
+    android: "https://play.google.com/store/apps/details?id=com.ahmetercikan.gasstory",
+    ios: "https://apps.apple.com/tr/app/gas-story-co-op-rafting/id6830748718" },
+];
+
+const ANDROID_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.86 3.22a11.4 11.4 0 0 0-9.84 0L5.22 5.92a.38.38 0 0 0-.66.38L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg>';
+const APPLE_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.82-.81-3-.79a4.43 4.43 0 0 0-3.74 2.27c-1.6 2.77-.41 6.87 1.15 9.12.76 1.1 1.67 2.34 2.86 2.3 1.15-.05 1.58-.74 2.97-.74 1.38 0 1.77.74 2.98.72 1.23-.02 2.01-1.12 2.76-2.23.87-1.28 1.23-2.52 1.25-2.58-.03-.01-2.4-.92-2.39-3.64zM14.1 5.86c.63-.77 1.06-1.83.94-2.89-.91.04-2.01.61-2.66 1.37-.58.67-1.1 1.76-.96 2.8 1.02.08 2.05-.52 2.68-1.28z"/></svg>';
+
+function storeBtn(url, kind, appName) {
+  const svg = kind === "android" ? ANDROID_SVG : APPLE_SVG;
+  const label = kind === "android" ? "Google Play" : "App Store";
+  if (!url) return `<span class="store ${kind} off" title="${label}: yakında" aria-label="${appName} ${label}: yakında">${svg}</span>`;
+  return `<a class="store ${kind}" href="${url}" target="_blank" rel="noopener" title="${label}" aria-label="${appName} - ${label}">${svg}</a>`;
+}
+
+document.getElementById("list").innerHTML = APPS.map(a => `
+  <article class="card">
+    <img src="${a.icon}" alt="${a.name} simgesi" loading="lazy">
+    <h2>${a.name}</h2>
+    <p>${a.desc}</p>
+    <div class="stores">${storeBtn(a.android, "android", a.name)}${storeBtn(a.ios, "ios", a.name)}</div>
+  </article>`).join("");
+</script>
+</body>
+</html>
